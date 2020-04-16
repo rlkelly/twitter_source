@@ -33,7 +33,7 @@ class BrainshareSource private (sqlContext: SQLContext, override val schema: Str
     if (queue.length == 0) {
       None
     } else {
-      val remaining_length = queue.last._1 - current_offset
+      val remaining_length = queue.last._1 - current_offset + 1
       val offset = LongOffset(last_sent + List(MAX_BATCH_SIZE, remaining_length).min)
 
       println(s"getOffset: $offset, ${queue.last._1}, ${current_offset}")
@@ -44,8 +44,8 @@ class BrainshareSource private (sqlContext: SQLContext, override val schema: Str
 
   override def getBatch(start: Option[Offset], end: Offset): DataFrame = this.synchronized {
 
-    val s = start.flatMap(LongOffset.convert).getOrElse(DEFAULT_OFFSET).offset + 1
-    val e = LongOffset.convert(end).getOrElse(DEFAULT_OFFSET).offset + 1
+    val s = start.flatMap(LongOffset.convert).getOrElse(DEFAULT_OFFSET).offset
+    val e = LongOffset.convert(end).getOrElse(DEFAULT_OFFSET).offset
     last_sent = e
 
     println(s"generating batch range $start ; $end")
