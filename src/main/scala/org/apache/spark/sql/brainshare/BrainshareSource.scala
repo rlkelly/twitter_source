@@ -67,7 +67,7 @@ class BrainshareSource private (sqlContext: SQLContext, override val schema: Str
   override def commit(end: Offset): Unit = this.synchronized {
 
     val committed = LongOffset.convert(end).getOrElse(DEFAULT_OFFSET).offset
-    val toKeep = queue.filter { case (idx, _) => idx > committed }
+    val toKeep = queue.filter { case (idx, _) => idx >= committed }
 
     println(s"after clean size ${toKeep.length}")
     println(s"deleted: ${queue.size - toKeep.size}")
