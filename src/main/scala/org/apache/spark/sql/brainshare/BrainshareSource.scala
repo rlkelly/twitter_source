@@ -18,7 +18,7 @@ class BrainshareSource private (sqlContext: SQLContext, override val schema: Str
   private val DEFAULT_OFFSET: LongOffset = LongOffset(0)
   private val MAX_BATCH_SIZE: Int = 50
   private val MAX_QUEUE_SIZE: Int = 500
-  private val TWEET_COUNT: Int = 101
+  private val TWEET_COUNT: Int = 100
 
   private var since = BigInt(0)
   private var latest_offset = -1L

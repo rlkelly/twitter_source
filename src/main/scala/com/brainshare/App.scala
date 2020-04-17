@@ -40,14 +40,9 @@ object App {
     (sparkSession
       .sql("select screen_name, SUM(likes) as c from w group by screen_name order by c desc")
       .writeStream
-      // .groupby("screen_name")
-      // .sum("impressions")
       .outputMode("complete")
       .format("console")
       .start
       .awaitTermination)
   }
 }
-
-
-// App.main(Array.empty[String])
