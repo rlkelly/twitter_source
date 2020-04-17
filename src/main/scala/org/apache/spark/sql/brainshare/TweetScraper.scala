@@ -25,6 +25,7 @@ object TweetBot {
       .body
     val bearer = token.split("\"")(7)
 
+    println(s" QUERY URL: https://api.twitter.com/1.1/search/tweets.json?q=%23hpe&count=${count}&since_id=${since_id}")
     val result = Http(s"https://api.twitter.com/1.1/search/tweets.json?q=%23hpe&count=${count}&since_id=${since_id}")
       .header("Content-Type", "application/json")
       .header("Charset", "UTF-8")
@@ -36,6 +37,7 @@ object TweetBot {
 
     val json = parse(result).extract[Map[String, Any]]
     val status = json("statuses").asInstanceOf[List[Map[String, Any]]]
+    println(s"status length: ${status.length}")
     for (row <- status) {
       val user = row("user").asInstanceOf[Map[String, Any]]
       val screen_name = user("screen_name").asInstanceOf[String]
@@ -44,6 +46,7 @@ object TweetBot {
       val likes = row("favorite_count").asInstanceOf[BigInt].toInt
       tweetList.append(TweetData(screen_name, likes, follower_count))
     }
+    println()
     val last = status.last("id").asInstanceOf[BigInt]
     (tweetList, last)
   }

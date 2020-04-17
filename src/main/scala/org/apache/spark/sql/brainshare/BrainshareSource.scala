@@ -18,7 +18,7 @@ class BrainshareSource private (sqlContext: SQLContext, override val schema: Str
   private val DEFAULT_OFFSET: LongOffset = LongOffset(0)
   private val MAX_BATCH_SIZE: Int = 50
   private val MAX_QUEUE_SIZE: Int = 500
-  private val TWEET_COUNT: Int = 100
+  private val TWEET_COUNT: Int = 101
 
   private var since = BigInt(0)
   private var latest_offset = -1L
@@ -56,6 +56,8 @@ class BrainshareSource private (sqlContext: SQLContext, override val schema: Str
       .map { case (_, v) => v }
       .seq
 
+    println(s"Data Length: ${data.length}")
+
     val rdd = sqlContext
       .sparkContext
       .parallelize(data)
@@ -90,7 +92,8 @@ class BrainshareSource private (sqlContext: SQLContext, override val schema: Str
             this.synchronized {
               if (queue.length < MAX_QUEUE_SIZE) {
                 val (tweets: ListBuffer[TweetData], latest_id: BigInt) = TweetBot.getTweets(since, TWEET_COUNT)
-                since = latest_id
+                since = latest_id + 1
+                println(s"TWEETS LENGTH: ${tweets.length}")
 
                 for (tweet <- tweets) {
                   latest_offset += 1
@@ -102,7 +105,7 @@ class BrainshareSource private (sqlContext: SQLContext, override val schema: Str
             case e: Exception => println(e)
           }
 
-          Thread.sleep(10000)
+          Thread.sleep(5000)
         }
       }
     }
